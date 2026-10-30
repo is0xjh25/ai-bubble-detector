@@ -35,6 +35,15 @@ Plus a dark-mode HTML report with a chart, a PDF of the same, and a CSV log that
 per trading day. On a Mac it can run itself every morning and ping you only when there's something
 to do.
 
+### The report
+
+<p align="center">
+  <a href="docs/sample-report.pdf"><img src="docs/sample-report.png" alt="Sample Bubble Detector report: verdict banner, key numbers, changes table, 200-day status, crash-buy ladder, ETF reference and a one-year chart with the ladder levels drawn in" width="820"></a>
+</p>
+
+Open the sample as a [PDF](docs/sample-report.pdf) or download the self-contained
+[HTML](docs/sample-report.html) (GitHub shows HTML as source; save it and open it in a browser).
+
 ---
 
 ## The rules
