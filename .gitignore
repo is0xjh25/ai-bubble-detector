@@ -1,0 +1,20 @@
+# Python
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# macOS
+.DS_Store
+
+# Generated output: the reports and the personal trading log stay local.
+# Remove the history.csv line if you keep this repo private and want the log backed up in git.
+reports/*.html
+reports/*.pdf
+reports/history.csv
+reports/history.csv.bak
+reports/logs/
+
+# Personal planning notes
+bubble-detector-plan.md
+bubble-detector-plan.pdf

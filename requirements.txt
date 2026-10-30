@@ -1,0 +1,6 @@
+yfinance>=0.2.50
+pandas>=2.0
+
+# Optional: PDF output. Also needs system libraries (macOS: brew install pango;
+# Debian/Ubuntu: apt install libpango-1.0-0 libpangoft2-1.0-0). See README.
+weasyprint>=60
