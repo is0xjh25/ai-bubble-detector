@@ -72,5 +72,50 @@ launchctl bootstrap "gui/$(id -u)" "$PLIST"
 
 names=(Sun Mon Tue Wed Thu Fri Sat Sun); daylist=""; for wd in ${CFG_DAYS//,/ }; do daylist+="${names[$wd]} "; done
 printf 'Installed %s\n  runs %sat %02d:%02d, log: %s/launchd.log\n' "$LABEL" "$daylist" "$HOUR" "$MINUTE" "$LOGDIR"
+
+# ---- permission check -------------------------------------------------------
+# macOS does not let background jobs read ~/Documents, ~/Desktop or ~/Downloads unless the
+# program (here /bin/bash) has Full Disk Access. Run a throwaway launchd job that tries to read
+# run.sh the same way the real job will, and explain what to do if it is blocked.
+PROBE_LABEL="$LABEL.probe"
+PROBE_DIR="$(mktemp -d)"; PROBE_PLIST="$PROBE_DIR/probe.plist"; PROBE_OUT="$PROBE_DIR/out.txt"
+cat > "$PROBE_PLIST" <<PLIST
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0"><dict>
+  <key>Label</key><string>$PROBE_LABEL</string>
+  <key>ProgramArguments</key><array><string>/bin/bash</string><string>-c</string>
+    <string>head -c 1 "\$1" >/dev/null 2>"\$2" &amp;&amp; echo ok >>"\$2"</string><string>--</string>
+    <string>$HERE_X/run.sh</string><string>$(xml "$PROBE_OUT")</string></array>
+  <key>RunAtLoad</key><false/>
+</dict></plist>
+PLIST
+launchctl bootout "gui/$(id -u)/$PROBE_LABEL" 2>/dev/null || true
+if launchctl bootstrap "gui/$(id -u)" "$PROBE_PLIST" 2>/dev/null && launchctl kickstart "gui/$(id -u)/$PROBE_LABEL" 2>/dev/null; then
+  for _ in 1 2 3 4 5 6 7 8 9 10; do [ -s "$PROBE_OUT" ] && break; sleep 0.5; done
+fi
+launchctl bootout "gui/$(id -u)/$PROBE_LABEL" 2>/dev/null || true
+if grep -q "^ok$" "$PROBE_OUT" 2>/dev/null; then
+  echo "Permission check: OK, background jobs can read the project."
+else
+  cat <<MSG
+
+PERMISSION NEEDED: a background job cannot read $HERE
+  ($(grep -m1 . "$PROBE_OUT" 2>/dev/null || echo "no response from the probe job"))
+  macOS blocks background jobs from ~/Documents, ~/Desktop and ~/Downloads. Fix it one of two ways:
+
+  A) Give bash Full Disk Access (keeps the project where it is):
+     1. System Settings > Privacy & Security > Full Disk Access (opening it for you now)
+     2. Click "+", press Cmd+Shift+G, type  /bin/bash  and press Return, then click Open
+     3. Make sure the switch next to "bash" is on
+     4. Re-run this script to confirm the check passes
+
+  B) Move the project out of those folders, e.g.  mv "$HERE" ~/ai-bubble-detector
+     and re-run this script from the new location.
+MSG
+  open "x-apple.systempreferences:com.apple.preference.security?Privacy_AllFiles" 2>/dev/null || true
+fi
+rm -rf "$PROBE_DIR"
+
 echo "Test it now with:  launchctl kickstart gui/$(id -u)/$LABEL"
 echo "Remove it with:    schedule/uninstall-schedule.sh"

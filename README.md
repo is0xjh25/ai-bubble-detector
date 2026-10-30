@@ -61,17 +61,26 @@ All the numbers are in `bubble_detector/config.py`, each one explained with exam
 
 ## Quick start
 
-Needs Python 3.10+.
+Needs Python 3.9 or newer. The `python3` that ships with macOS is fine.
 
 ```bash
 git clone https://github.com/is0xjh25/ai-bubble-detector.git
 cd ai-bubble-detector
-python3 -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt
 ./run.sh
 ```
 
-That runs the check and opens the report in your browser. Flags you might want:
+That's it. The first run creates a virtual environment in `.venv`, installs the two dependencies,
+runs the check, and opens the report in your browser. Later runs skip straight to the check.
+
+Prefer to set things up by hand? Same result:
+
+```bash
+python3 -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+python -m bubble_detector
+```
+
+Flags you might want:
 
 | | |
 |---|---|
@@ -85,7 +94,8 @@ cleaned up after 90 days.
 **PDF** needs WeasyPrint's system libraries (`brew install pango` on macOS). Without them the PDF
 is skipped and everything else still works.
 
-**Old Python?** macOS ships 3.9. `brew install uv && uv venv --python 3.12 .venv` gets you a 3.12.
+**Want a newer Python?** `brew install uv`, then `uv venv --python 3.12 .venv` and
+`uv pip install -r requirements.txt`. If `uv` is installed, `run.sh` uses it automatically.
 
 ---
 
@@ -99,11 +109,14 @@ schedule/build-notifier.sh        # optional: notifications with the bubble icon
 You'll get a notification only on BUY, RECOVERY, or if the run fails. The rest of the time it's
 silent, like a smoke alarm that respects you.
 
-Two macOS gotchas:
+Two macOS gotchas, both handled for you as far as possible:
 
-- Background jobs can't read `~/Documents`, `~/Desktop` or `~/Downloads`. Keep the project
-  elsewhere, or give `/bin/bash` Full Disk Access in System Settings.
-- Click **Allow** the first time it asks to send notifications.
+- **Folder permission.** macOS won't let background jobs read `~/Documents`, `~/Desktop` or
+  `~/Downloads`. The install script checks this and tells you if you're affected. The fix is either
+  to keep the project somewhere else (for example `~/ai-bubble-detector`), or to give bash Full
+  Disk Access: System Settings → Privacy & Security → Full Disk Access → **+** → press ⌘⇧G, type
+  `/bin/bash`, Open → make sure the switch is on → run the install script again.
+- **Notifications.** Click **Allow** the first time it asks.
 
 On Linux, point cron at `run.sh --no-open --notify` instead.
 

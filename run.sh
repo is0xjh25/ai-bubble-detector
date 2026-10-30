@@ -34,14 +34,14 @@ if [ ! -x "$PY" ]; then
     uv venv --python 3.12 "$VENV" >&2
     uv pip install --python "$PY" -r requirements.txt >&2
   else
-    # need python >= 3.10
-    for cand in python3.13 python3.12 python3.11 python3.10 python3; do
-      if command -v "$cand" >/dev/null 2>&1 && "$cand" -c 'import sys; sys.exit(sys.version_info < (3, 10))'; then
+    # need python >= 3.9
+    for cand in python3.13 python3.12 python3.11 python3.10 python3.9 python3; do
+      if command -v "$cand" >/dev/null 2>&1 && "$cand" -c 'import sys; sys.exit(sys.version_info < (3, 9))'; then
         "$cand" -m venv "$VENV"
         break
       fi
     done
-    [ -x "$PY" ] || { echo "error: no Python 3.10+ found. Install uv (brew install uv) or a newer Python." >&2; exit 1; }
+    [ -x "$PY" ] || { echo "error: no Python 3.9+ found. Install uv (brew install uv) or a newer Python." >&2; exit 1; }
     "$PY" -m pip install -q -r requirements.txt >&2
   fi
 fi
