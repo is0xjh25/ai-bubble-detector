@@ -85,13 +85,13 @@ class WebPageTest(unittest.TestCase):
         self.assertEqual(last_trading_day(utc(6, 6)), date(2026, 11, 5))    # Fri 01:00 NY, before the open
         self.assertEqual(last_trading_day(utc(6, 15)), date(2026, 11, 6))   # Fri 10:00 NY
         self.assertEqual(last_trading_day(utc(27, 6)), date(2026, 11, 25))  # skips Thanksgiving
-        self.assertIn("Sitemap: https://bubble-detector-silk.vercel.app/sitemap.xml", robots_txt())
+        self.assertIn("Sitemap: https://bubbledetector.app/sitemap.xml", robots_txt())
         self.assertIn("<lastmod>2026-11-05</lastmod>", sitemap_xml(utc(6, 6)))
 
         idx = pd.bdate_range("2025-01-01", periods=10)
         s = summarise(pd.Series(range(1, 11), index=idx, dtype=float))
         page = render_html(s)
-        self.assertIn('<link rel="canonical" href="https://bubble-detector-silk.vercel.app/">', page)
+        self.assertIn('<link rel="canonical" href="https://bubbledetector.app/">', page)
         self.assertNotIn("google-site-verification", page)
         with mock.patch.dict(os.environ, {"GOOGLE_SITE_VERIFICATION": "abc123"}):
             self.assertIn('<meta name="google-site-verification" content="abc123">', render_html(s))

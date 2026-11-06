@@ -136,8 +136,9 @@ ICON_GITHUB = _icon(
     "c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5Z", filled=True)
 
 AUTHOR = "is0xjh25"
-# The address search engines should treat as the real one. Set SITE_URL in Vercel if the site moves to its own domain.
-SITE_URL = os.environ.get("SITE_URL", "https://bubble-detector-silk.vercel.app").rstrip("/")
+# The address search engines should treat as the real one (canonical link, robots.txt, sitemap).
+# vercel.json redirects the project's vercel.app address here. Override with SITE_URL if the domain changes.
+SITE_URL = os.environ.get("SITE_URL", "https://bubbledetector.app").rstrip("/")
 REPO_URL = "https://github.com/is0xjh25/bubble-detector"
 DISCLAIMER = ("Not financial advice. This page only shows how far the index is below its all-time high; "
               "it does not recommend buying, selling or holding anything.")

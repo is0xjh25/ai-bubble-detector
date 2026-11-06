@@ -46,12 +46,12 @@ Open the sample as a [PDF](docs/sample-report.pdf) or download the self-containe
 
 ### The web page
 
-**[bubble-detector-silk.vercel.app](https://bubble-detector-silk.vercel.app)** answers one question
+**[bubbledetector.app](https://bubbledetector.app)** answers one question
 at a glance: how far is the Nasdaq below its all-time high, and how bad is that? No buy ladder here,
 just the drop and the history around it.
 
 <p align="center">
-  <a href="https://bubble-detector-silk.vercel.app"><img src="docs/web-page.png" alt="Bubble Detector web page: the Nasdaq 11.90% below its all-time high, labelled Correction, with a gauge against past drops, a one-year chart with range buttons, and a table of changes and deepest drops per period" width="460"></a>
+  <a href="https://bubbledetector.app"><img src="docs/web-page.png" alt="Bubble Detector web page: the Nasdaq 11.90% below its all-time high, labelled Correction, with a gauge against past drops, a one-year chart with range buttons, and a table of changes and deepest drops per period" width="460"></a>
 </p>
 
 - **The drop, with context.** A plain label (Near the high, Pullback, Correction, Bear market), the
@@ -75,7 +75,7 @@ just the drop and the history around it.
 - **Installs like an app.** "Add to Home Screen" gives it the bubble icon and a full-screen window,
   and it shows the last copy when you're offline.
 - **Share** button, link previews, and the numbers as JSON at
-  [`/data.json`](https://bubble-detector-silk.vercel.app/data.json), readable from any site.
+  [`/data.json`](https://bubbledetector.app/data.json), readable from any site.
 
 Preview it locally (writes `site/index.html` and `site/data.json`):
 
@@ -95,7 +95,7 @@ Two optional Vercel environment variables:
 | | |
 |---|---|
 | `GOOGLE_SITE_VERIFICATION` | the code from Google Search Console's "HTML tag" method; adds the verification tag to the page |
-| `SITE_URL` | the site's public address, if it moves to its own domain (default `https://bubble-detector-silk.vercel.app`) |
+| `SITE_URL` | the site's public address, if it ever changes (default `https://bubbledetector.app`) |
 
 ---
 

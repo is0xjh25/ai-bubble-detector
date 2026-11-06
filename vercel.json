@@ -7,6 +7,19 @@
       "includeFiles": "bubble_detector/static/**"
     }
   },
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "bubble-detector-silk.vercel.app"
+        }
+      ],
+      "destination": "https://bubbledetector.app/:path*",
+      "permanent": true
+    }
+  ],
   "rewrites": [
     {
       "source": "/",
