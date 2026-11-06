@@ -1,0 +1,6 @@
+{
+  "rewrites": [
+    { "source": "/", "destination": "/api/index" },
+    { "source": "/data.json", "destination": "/api/index?format=json" }
+  ]
+}

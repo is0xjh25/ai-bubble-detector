@@ -1,0 +1,10 @@
+.venv
+.github
+reports
+schedule
+tests
+docs
+assets
+site
+*.pdf
+*.md
