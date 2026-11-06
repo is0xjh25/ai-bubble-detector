@@ -89,6 +89,14 @@ it until the next update (hourly while the market is open, otherwise until the n
 holidays and half days accounted for). When a copy expires, visitors get the previous one while a
 new one is fetched, so nobody waits on Yahoo.
 
+**Search engines.** The site serves `robots.txt` and `sitemap.xml` and marks its canonical address.
+Two optional Vercel environment variables:
+
+| | |
+|---|---|
+| `GOOGLE_SITE_VERIFICATION` | the code from Google Search Console's "HTML tag" method; adds the verification tag to the page |
+| `SITE_URL` | the site's public address, if it moves to its own domain (default `https://bubble-detector-silk.vercel.app`) |
+
 ---
 
 ## The rules

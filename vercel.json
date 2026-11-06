@@ -31,6 +31,14 @@
     {
       "source": "/icon-:size.png",
       "destination": "/api/index?format=png&size=:size"
+    },
+    {
+      "source": "/robots.txt",
+      "destination": "/api/index?format=robots"
+    },
+    {
+      "source": "/sitemap.xml",
+      "destination": "/api/index?format=sitemap"
     }
   ]
 }

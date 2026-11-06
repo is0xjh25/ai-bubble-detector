@@ -77,6 +77,25 @@ class WebPageTest(unittest.TestCase):
         page = render_html(summarise(pd.Series(vals, index=idx)))
         self.assertIn("Measured from its own high", page)
 
+    def test_search_engine_files(self):
+        import os
+        from unittest import mock
+        from bubble_detector.web import last_trading_day, robots_txt, sitemap_xml
+        utc = lambda d, h: datetime(2026, 11, d, h, 0, tzinfo=timezone.utc)
+        self.assertEqual(last_trading_day(utc(6, 6)), date(2026, 11, 5))    # Fri 01:00 NY, before the open
+        self.assertEqual(last_trading_day(utc(6, 15)), date(2026, 11, 6))   # Fri 10:00 NY
+        self.assertEqual(last_trading_day(utc(27, 6)), date(2026, 11, 25))  # skips Thanksgiving
+        self.assertIn("Sitemap: https://bubble-detector-silk.vercel.app/sitemap.xml", robots_txt())
+        self.assertIn("<lastmod>2026-11-05</lastmod>", sitemap_xml(utc(6, 6)))
+
+        idx = pd.bdate_range("2025-01-01", periods=10)
+        s = summarise(pd.Series(range(1, 11), index=idx, dtype=float))
+        page = render_html(s)
+        self.assertIn('<link rel="canonical" href="https://bubble-detector-silk.vercel.app/">', page)
+        self.assertNotIn("google-site-verification", page)
+        with mock.patch.dict(os.environ, {"GOOGLE_SITE_VERIFICATION": "abc123"}):
+            self.assertIn('<meta name="google-site-verification" content="abc123">', render_html(s))
+
     def test_span(self):
         from bubble_detector.web import _span
         self.assertEqual(_span(1), "1 day")
@@ -102,6 +121,8 @@ class WebPageTest(unittest.TestCase):
 
         self.assertIn(b'"display": "standalone"', get("/api/index?format=manifest"))
         self.assertIn(b"caches.open", get("/api/index?format=sw"))
+        self.assertIn(b"Sitemap:", get("/api/index?format=robots"))
+        self.assertIn(b"<urlset", get("/api/index?format=sitemap"))
         self.assertIn(b"\x89PNG", get("/api/index?format=png&size=192"))
         self.assertIn(b"404", get("/api/index?format=png&size=99").split(b"\r\n")[0])
 

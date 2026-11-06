@@ -15,6 +15,7 @@ import argparse
 import html
 import json
 import math
+import os
 from datetime import date, datetime, timedelta, timezone
 from functools import lru_cache
 from pathlib import Path
@@ -135,6 +136,8 @@ ICON_GITHUB = _icon(
     "c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5Z", filled=True)
 
 AUTHOR = "is0xjh25"
+# The address search engines should treat as the real one. Set SITE_URL in Vercel if the site moves to its own domain.
+SITE_URL = os.environ.get("SITE_URL", "https://bubble-detector-silk.vercel.app").rstrip("/")
 REPO_URL = "https://github.com/is0xjh25/bubble-detector"
 DISCLAIMER = ("Not financial advice. This page only shows how far the index is below its all-time high; "
               "it does not recommend buying, selling or holding anything.")
@@ -263,6 +266,29 @@ def _next_open(after: date) -> datetime:
     while not is_trading_day(d):
         d += timedelta(days=1)
     return _at(d, MARKET_OPEN_TIME)
+
+
+def last_trading_day(now: datetime) -> date:
+    """The most recent trading day up to now in New York (today once the session has started)."""
+    local = now.astimezone(ZoneInfo(EXCHANGE_TZ))
+    d = local.date()
+    if not (is_trading_day(d) and local >= _at(d, MARKET_OPEN_TIME)):
+        d -= timedelta(days=1)
+        while not is_trading_day(d):
+            d -= timedelta(days=1)
+    return d
+
+
+def robots_txt() -> str:
+    return f"User-agent: *\nAllow: /\nDisallow: /api/\n\nSitemap: {SITE_URL}/sitemap.xml\n"
+
+
+def sitemap_xml(now: datetime) -> str:
+    """One page; lastmod is the last trading day, when the numbers last changed."""
+    return ('<?xml version="1.0" encoding="UTF-8"?>\n'
+            '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+            f"  <url><loc>{SITE_URL}/</loc><lastmod>{last_trading_day(now).isoformat()}</lastmod></url>\n"
+            "</urlset>\n")
 
 
 def market_is_open(last_bar: pd.Timestamp, now: datetime | None = None) -> bool:
@@ -642,6 +668,8 @@ def render_html(s: dict) -> str:
     description = (f'{s["index"]} is at an all-time high.' if at_high
                    else f'{s["index"]} is {abs(s["drop_pct"]):.2f}% below its all-time high ({s["zone"].lower()}).')
     data = json.dumps(s, separators=(",", ":")).replace("</", "<\\/")
+    code = os.environ.get("GOOGLE_SITE_VERIFICATION", "").strip()  # from Google Search Console, set in Vercel
+    verification = f'\n<meta name="google-site-verification" content="{e(code)}">' if code else ""
     return f"""<!doctype html>
 <html lang="en">
 <head>
@@ -652,6 +680,8 @@ def render_html(s: dict) -> str:
 <meta property="og:title" content="{e(s["index"])}: {drop_txt} from its all-time high">
 <meta property="og:description" content="{e(description)}">
 <meta property="og:type" content="website">
+<meta property="og:url" content="{e(SITE_URL)}/">
+<link rel="canonical" href="{e(SITE_URL)}/">{verification}
 <meta name="theme-color" content="#f7f7f5" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#141416" media="(prefers-color-scheme: dark)">
 <link rel="icon" href="{ICON_HREF}">
@@ -848,9 +878,12 @@ footer .by .logo { width:22px; height:22px; filter:none; }
 .crow.head { font-size:13px; font-weight:600; color:var(--muted); padding-top:0; }
 .crow.head::after { content:""; }
 .crash { border-top:1px solid var(--line); }
-.crash summary { cursor:pointer; list-style:none; border-radius:8px; }
+.crash summary { cursor:pointer; list-style:none; border-radius:8px; -webkit-tap-highlight-color:transparent; }
 .crash summary::-webkit-details-marker { display:none; }
-.crash summary:hover, .crash[open] summary { background:var(--hl); }
+.crash summary:focus { outline:none; }
+.crash summary:focus-visible { outline:2px solid var(--fg); outline-offset:2px; }
+.crash summary:hover::after { border-color:var(--fg); }
+.crash[open] summary > span:first-child { font-weight:650; }
 .crash summary::after { content:""; justify-self:end; width:7px; height:7px; border:solid var(--muted); border-width:0 2px 2px 0;
   transform:rotate(45deg) translateY(-2px); transition:transform .25s; }
 .crash[open] summary::after { transform:rotate(-135deg) translateY(-2px); }

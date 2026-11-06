@@ -17,7 +17,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from bubble_detector.web import (  # noqa: E402
     APP_ICON_SIZES, ICON_SVG, MANIFEST, STATIC_DIR, SW_JS, WEB_FETCH_RETRIES, WEB_FETCH_TIMEOUT_SECONDS,
-    fetch_closes, next_update, public_json, render_error, render_html, summarise,
+    fetch_closes, next_update, public_json, render_error, render_html, robots_txt, sitemap_xml, summarise,
 )
 
 STALE_SECONDS = 7 * 24 * 3600  # how long the CDN may serve an expired copy while refreshing or when Yahoo fails
@@ -47,6 +47,13 @@ class handler(BaseHTTPRequestHandler):
         if fmt == "manifest":
             self._send(200, "application/manifest+json", MANIFEST, day, head)
             return
+        if fmt == "robots":
+            self._send(200, "text/plain; charset=utf-8", robots_txt(), day, head)
+            return
+        if fmt == "sitemap":
+            self._send(200, "application/xml; charset=utf-8", sitemap_xml(datetime.now(timezone.utc)),
+                       "public, max-age=3600", head)
+            return
         if fmt == "sw":  # browsers check for a new version on every visit, so never let it go stale
             self._send(200, "application/javascript; charset=utf-8", SW_JS, "no-cache", head)
             return
@@ -61,7 +68,7 @@ class handler(BaseHTTPRequestHandler):
         # Browsers always revalidate; the CDN holds it until the next update, then serves it stale while refetching.
         cache = f"public, max-age=0, s-maxage={ttl}, stale-while-revalidate={STALE_SECONDS}, stale-if-error={STALE_SECONDS}"
         if fmt == "json":
-            self._send(200, "application/json", public_json(s), cache, head, {"Access-Control-Allow-Origin": "*"})
+            self._send(200, "application/json", public_json(s), cache, head, {"Access-Control-Allow-Origin": "*", "X-Robots-Tag": "noindex"})
         else:
             self._send(200, "text/html; charset=utf-8", render_html(s), cache, head)
 
