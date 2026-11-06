@@ -9,14 +9,14 @@
   },
   "redirects": [
     {
-      "source": "/:path*",
+      "source": "/(.*)",
       "has": [
         {
           "type": "host",
           "value": "bubble-detector-silk.vercel.app"
         }
       ],
-      "destination": "https://bubbledetector.app/:path*",
+      "destination": "https://bubbledetector.app/$1",
       "permanent": true
     }
   ],
