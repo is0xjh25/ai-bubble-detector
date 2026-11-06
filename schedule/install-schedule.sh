@@ -110,7 +110,7 @@ PERMISSION NEEDED: a background job cannot read $HERE
      3. Make sure the switch next to "bash" is on
      4. Re-run this script to confirm the check passes
 
-  B) Move the project out of those folders, e.g.  mv "$HERE" ~/ai-bubble-detector
+  B) Move the project out of those folders, e.g.  mv "$HERE" ~/bubble-detector
      and re-run this script from the new location.
 MSG
   open "x-apple.systempreferences:com.apple.preference.security?Privacy_AllFiles" 2>/dev/null || true

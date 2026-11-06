@@ -64,8 +64,8 @@ All the numbers are in `bubble_detector/config.py`, each one explained with exam
 Needs Python 3.9 or newer. The `python3` that ships with macOS is fine.
 
 ```bash
-git clone https://github.com/is0xjh25/ai-bubble-detector.git
-cd ai-bubble-detector
+git clone https://github.com/is0xjh25/bubble-detector.git
+cd bubble-detector
 ./run.sh
 ```
 
@@ -113,7 +113,7 @@ Two macOS gotchas, both handled for you as far as possible:
 
 - **Folder permission.** macOS won't let background jobs read `~/Documents`, `~/Desktop` or
   `~/Downloads`. The install script checks this and tells you if you're affected. The fix is either
-  to keep the project somewhere else (for example `~/ai-bubble-detector`), or to give bash Full
+  to keep the project somewhere else (for example `~/bubble-detector`), or to give bash Full
   Disk Access: System Settings → Privacy & Security → Full Disk Access → **+** → press ⌘⇧G, type
   `/bin/bash`, Open → make sure the switch is on → run the install script again.
 - **Notifications.** Click **Allow** the first time it asks.
