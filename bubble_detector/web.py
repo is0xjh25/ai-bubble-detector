@@ -37,6 +37,103 @@ DAILY_CHART_YEARS = 5                     # chart ranges up to 5Y use daily clos
 CRASH_PCT = -20.0                         # drops at least this deep are marked on the chart and the gauge
 # (deepest drop, name), checked in order. Standard market terms describing the size of a drop, not signals.
 ZONES = [(-20.0, "Bear market"), (-10.0, "Correction"), (-5.0, "Pullback"), (0.0, "Near the high")]
+# Why each crash happened, keyed by the date of the high it fell from. Shown when a row in "Past crashes" is
+# opened. The last entry describes the drop under way and is only shown while that drop lasts.
+FRH = "https://www.federalreservehistory.org/essays/"
+CRASH_NOTES = {
+    "1973-01-11": ("Oil shock and stagflation",
+                   "The post-war boom ended in rising inflation, the breakdown of the Bretton Woods currency system "
+                   "and Watergate. The Arab oil embargo of October 1973 quadrupled oil prices and pushed the US into a "
+                   "deep recession, and the high-flying “Nifty Fifty” growth stocks were cut down.",
+                   [("Federal Reserve History", FRH + "oil-shock-of-1973-74")]),
+    "1978-09-13": ("The October massacre",
+                   "A sliding dollar, rising inflation and sharply higher interest rates set off a two-week rout in "
+                   "late October 1978. It ended when Washington announced a rescue plan for the dollar on 1 November.",
+                   [("Time, 1978", "https://content.time.com/time/subscriber/article/0,33009,965842,00.html")]),
+    "1980-02-08": ("Inflation, credit controls and the silver crash",
+                   "With inflation near 15%, interest rates headed toward 20% and in March 1980 the government imposed "
+                   "credit controls. On 27 March, “Silver Thursday”, the Hunt brothers’ attempt to corner "
+                   "silver collapsed and rattled brokers. Stocks recovered once the controls were lifted that summer.",
+                   [("Federal Reserve History", FRH + "credit-control-of-1980"),
+                    ("Silver Thursday", "https://en.wikipedia.org/wiki/Silver_Thursday")]),
+    "1981-05-29": ("Volcker’s war on inflation",
+                   "The Fed held interest rates near 20% to break inflation, tipping the economy into a deep recession "
+                   "with unemployment near 11%. Stocks bottomed in August 1982 as the Fed began to ease, starting a long "
+                   "bull market.",
+                   [("Federal Reserve History", FRH + "recession-of-1981-82")]),
+    "1983-06-24": ("The first tech bust",
+                   "Personal-computer, video-game and biotech stocks soared in early 1983 on a wave of new listings, then "
+                   "collapsed as competition and IBM’s price cuts crushed profits. Tech shares stayed in the "
+                   "doldrums until 1985.",
+                   [("Christian Science Monitor, 1986", "https://www.csmonitor.com/1986/0331/fwall31.html")]),
+    "1987-08-27": ("Black Monday",
+                   "After a big run-up, worries about rising interest rates, a weak dollar and the trade deficit turned "
+                   "into panic. On 19 October 1987 US stocks had their worst day ever, made worse by automated "
+                   "“portfolio insurance” selling. The Fed’s promise of liquidity stopped the slide.",
+                   [("Federal Reserve History", FRH + "stock-market-crash-of-1987")]),
+    "1989-10-09": ("Junk bonds, the savings-and-loan crisis and the Gulf War",
+                   "A failed buyout of United Airlines set off a mini-crash on 13 October 1989 as the junk-bond market "
+                   "unravelled, and hundreds of failing savings-and-loan banks squeezed credit. When Iraq invaded Kuwait "
+                   "in August 1990 oil prices more than doubled and the US slipped into recession.",
+                   [("Federal Reserve History", FRH + "recession-of-1990-91")]),
+    "1998-07-20": ("Russia defaults, LTCM nearly fails",
+                   "Russia’s debt default in August 1998 set off a global flight from risk and pushed the giant "
+                   "hedge fund Long-Term Capital Management to the brink. The Fed organised a rescue and cut rates three "
+                   "times, and stocks recovered within weeks.",
+                   [("Federal Reserve History", FRH + "ltcm-near-failure")]),
+    "2000-03-10": ("The dot-com bust",
+                   "Internet companies with little or no profit had driven the Nasdaq up fivefold in five years. As rates "
+                   "rose and the money ran out, the bubble burst; the 2001 recession, the 9/11 attacks and the Enron and "
+                   "WorldCom scandals deepened the fall. The Nasdaq didn’t regain its 2000 high until 2015.",
+                   [("Dot-com bubble", "https://en.wikipedia.org/wiki/Dot-com_bubble")]),
+    "2007-10-31": ("The global financial crisis",
+                   "Losses on US subprime mortgages spread through the banking system, and the collapse of Lehman "
+                   "Brothers in September 2008 froze credit worldwide. The Great Recession followed; stocks bottomed in "
+                   "March 2009 after huge government and Fed rescues.",
+                   [("Federal Reserve History", FRH + "great-recession-of-200709")]),
+    "2018-08-29": ("Rate hikes and the trade war",
+                   "The Fed kept raising interest rates while the US–China trade war escalated and fears of a "
+                   "slowdown grew. December 2018 was the worst December since 1931, bottoming on Christmas Eve, and the "
+                   "Fed paused its hikes soon after.",
+                   [("PBS NewsHour, 2018", "https://www.pbs.org/newshour/nation/u-s-stocks-plunge-on-christmas-eve")]),
+    "2020-02-19": ("COVID-19",
+                   "As the pandemic spread and economies locked down, stocks fell by about a third in a month, one of the "
+                   "fastest crashes on record. Huge Fed and government support sparked an equally fast recovery, led by "
+                   "tech.",
+                   [("2020 stock market crash", "https://en.wikipedia.org/wiki/2020_stock_market_crash")]),
+    "2021-11-19": ("Inflation and the fastest rate hikes in decades",
+                   "Inflation hit a 40-year high and the Fed raised rates at the fastest pace since the 1980s. Higher "
+                   "rates hit richly valued tech and growth stocks hardest, and the crypto crash added to the pain. The "
+                   "AI boom that began with ChatGPT led the recovery.",
+                   [("2022 stock market decline", "https://en.wikipedia.org/wiki/2022_stock_market_decline")]),
+    "2024-12-16": ("DeepSeek and the tariff shock",
+                   "China’s low-cost DeepSeek AI model shook AI chip stocks in January 2025. Then the sweeping "
+                   "“Liberation Day” tariffs announced on 2 April 2025 set off a global sell-off; stocks "
+                   "rebounded after most of the tariffs were paused on 9 April.",
+                   [("2025 stock market crash", "https://en.wikipedia.org/wiki/2025_stock_market_crash")]),
+    "2026-10-06": ("The AI trade cracks",
+                   "After a record on 6 October, tech slid on worries about the cost and payoff of the AI build-out, "
+                   "weak chip stocks and disappointing Big Tech earnings. On 5 November, after Democratic midterm gains "
+                   "raised fears that new governments would slow data-center construction, the Nasdaq fell 5.5%, its "
+                   "worst day since April 2025, and chip stocks dropped about 12%. (Written 6 November 2026.)",
+                   [("CNN", "https://edition.cnn.com/2026/11/05/investing/tech-heavy-nasdaq-plunges"),
+                    ("Charles Schwab", "https://www.schwab.com/learn/story/market-volatility")]),
+}
+
+def _icon(path: str, filled: bool = False) -> str:
+    paint = 'fill="currentColor"' if filled else 'fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"'
+    return f'<svg viewBox="0 0 24 24" aria-hidden="true"><path {paint} d="{path}"/></svg>'
+
+
+ICON_SHARE = _icon("M12 3v12M7 8l5-5 5 5M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6")
+ICON_DATA = _icon("M8 4H7a2 2 0 0 0-2 2v4l-2 2 2 2v4a2 2 0 0 0 2 2h1M16 4h1a2 2 0 0 1 2 2v4l2 2-2 2v4a2 2 0 0 1-2 2h-1")
+ICON_GITHUB = _icon(
+    "M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.33-1.28-1.69-1.28-1.69"
+    "-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.56-.29-5.25-1.28"
+    "-5.25-5.69 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.47.11-3.06 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17"
+    "-1.18 3.17-1.18.63 1.59.23 2.77.11 3.06.74.81 1.19 1.84 1.19 3.1 0 4.42-2.7 5.39-5.27 5.68.41.36.78 1.06.78 2.14v3.17"
+    "c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5Z", filled=True)
+
 AUTHOR = "is0xjh25"
 REPO_URL = "https://github.com/is0xjh25/bubble-detector"
 DISCLAIMER = ("Not financial advice. This page only shows how far the index is below its all-time high; "
@@ -50,6 +147,13 @@ ICON_SVG = (
     "</svg>"
 )  # same as assets/icons/icon.svg
 ICON_HREF = "data:image/svg+xml," + quote(ICON_SVG)
+LOGO_SVG = (
+    '<svg class="logo" viewBox="0 0 1024 1024" aria-hidden="true">'
+    '<rect width="1024" height="1024" rx="230" fill="#0a0a0a"/>'
+    '<circle cx="512" cy="512" r="290" fill="none" stroke="#fff" stroke-width="44"/>'
+    '<path d="M330 420 A 220 220 0 0 1 430 320" fill="none" stroke="#fff" stroke-width="44" stroke-linecap="round"/>'
+    "</svg>"
+)
 STATIC_DIR = Path(__file__).parent / "static"  # full-bleed PNG app icons (icon-180/192/512.png)
 APP_ICON_SIZES = (180, 192, 512)
 
@@ -212,15 +316,29 @@ def _episodes(dd: pd.Series) -> list[dict]:
     return out
 
 
-def _crashes(episodes: list[dict]) -> list[dict]:
-    """Every fall of CRASH_PCT or worse, oldest first (the last may be ongoing)."""
-    return [
-        {"peak": _iso(ep["peak"]), "trough": _iso(ep["trough"]), "pct": round(ep["low"], 2),
-         "recovered": _iso(ep["recovered"]) if ep["recovered"] is not None else None,
-         "days_down": (ep["trough"] - ep["peak"]).days,
-         "days_to_recover": (ep["recovered"] - ep["trough"]).days if ep["recovered"] is not None else None}
-        for ep in episodes if ep["low"] <= CRASH_PCT + 1e-9  # 80/100 - 1 is -19.999...%, still a 20% fall
-    ]
+def _crashes(closes: pd.Series, from_record: bool = True) -> list[dict]:
+    """Every fall of CRASH_PCT or worse from a high, oldest first (the last may be ongoing).
+
+    The top level measures from all-time highs. The climb back after each crash is searched again with
+    its own running high, which finds bear markets that started below an older record: 2007-09 began
+    at a 2007 high while the index was still under its March 2000 peak.
+    """
+    dd = (closes / closes.cummax() - 1) * 100
+    out = []
+    for ep in _episodes(dd):
+        if ep["low"] > CRASH_PCT + 1e-9:  # 80/100 - 1 is -19.999...%, still a 20% fall
+            continue
+        out.append({"peak": _iso(ep["peak"]), "trough": _iso(ep["trough"]), "pct": round(ep["low"], 2),
+                    "recovered": _iso(ep["recovered"]) if ep["recovered"] is not None else None,
+                    "days_down": (ep["trough"] - ep["peak"]).days,
+                    "days_to_recover": (ep["recovered"] - ep["trough"]).days if ep["recovered"] is not None else None,
+                    "from_record": from_record})
+        climb = closes.loc[ep["trough"]:ep["recovered"]]
+        if ep["recovered"] is not None:
+            climb = climb.iloc[:-1]  # stop the day before the old high is regained
+        if len(climb) > 2:
+            out += _crashes(climb, from_record=False)
+    return sorted(out, key=lambda c: c["peak"])
 
 
 def _this_drop(episodes: list[dict], dd: pd.Series) -> dict | None:
@@ -297,7 +415,7 @@ def summarise(closes: pd.Series, now: datetime | None = None) -> dict:
         "deepest_ever": {"pct": round(float(dd.min()), 2), "date": _iso(dd.idxmin())},
         "needs_pct": round((ath_close / last_close - 1) * 100, 2),  # gain needed to get back to the high
         "this_drop": _this_drop(episodes, dd),
-        "crashes": _crashes(episodes),
+        "crashes": _crashes(closes),
         "day_move": None if one_day is None or one_day["pct"] is None else {
             "pct": one_day["pct"],
             "label": "today" if live or last_ts.date() == today else f"on {last_ts.strftime('%a')}"},
@@ -370,50 +488,80 @@ def _facts(s: dict) -> str:
         slope = f', {e(m["slope"])}' if m["slope"] else ""
         items.append((f'{m["window"]}-day average', f'{abs(m["pct"]):.1f}% {side}{slope}', "sma"))
     if d:
-        items.append(("Lowest so far", f'<span class="down">{_pct(d["low_pct"])}</span> <span class="muted nw">({_day(d["low_date"])})</span>', "low"))
+        if d["low_date"] == s["last_date"]:  # the headline already shows the figure
+            same_day = s["day_move"] and s["day_move"]["label"] == "today"
+            when = "Today" if same_day else f'{date.fromisoformat(s["last_date"]).strftime("%A")}’s close'
+            low = f'<span class="down">{when}</span>'
+        else:
+            low = f'<span class="down">{_pct(d["low_pct"])}</span> <span class="muted nw">({_day(d["low_date"])})</span>'
+        items.append(("Lowest so far", low, "low"))
     facts = "".join(f'<div><dt>{label}</dt><dd data-k="{k}">{value}</dd></div>' for label, value, k in items)
 
+    h = s["history"]
+    share = "under 1" if 0 < h["share_pct"] < 1 else f'{h["share_pct"]:.0f}'
     if not d:
-        story = "No drop under way: the last close is a record."
+        story = (f'No drop under way: the last close is a record. Since {h["from_year"]}, <b>{share}%</b> of '
+                 f'trading days have ended at a record.')
     elif not d["past"]:
-        story = f'The index has never been this far below its high since {s["history"]["from_year"]}.'
+        story = f'The index has never been this far below its high since {h["from_year"]}.'
     else:
         p = d["past"]
-        story = (f'Since {s["history"]["from_year"]}, <b>{p["count"]}</b> earlier drops got this deep. They hit bottom a '
-                 f'median of <b>{_span(p["to_low_median_days"])}</b> after their high, and were back at the high a median '
-                 f'of <b>{_span(p["recover_median_days"])}</b> after reaching {_pct(s["drop_pct"])} '
+        story = (f'Since {h["from_year"]}, the index has been this far or further below its high on <b>{share}%</b> '
+                 f'of trading days, and <b>{p["count"]}</b> earlier drops got this deep. They hit bottom a median of '
+                 f'<b>{_span(p["to_low_median_days"])}</b> after their high, and were back at the high a median of '
+                 f'<b>{_span(p["recover_median_days"])}</b> after reaching {_pct(s["drop_pct"])} '
                  f'(fastest {_span(p["recover_min_days"])}, slowest {_span(p["recover_max_days"])}).')
     title = "This drop" if d else "Trend"
     return (f'<section class="card"><h2>{title}</h2><dl class="facts">{facts}</dl>'
             f'<p class="context" data-k="story">{story}</p></section>')
 
 
+def _why(key: str, facts: str, a: int, b: int, note: str) -> str:
+    """The opened part of a crash row: what happened, the dates, a chart button and the sources."""
+    title, text, sources = CRASH_NOTES.get(key, ("", "", []))
+    links = " · ".join(f'<a href="{html.escape(u)}" target="_blank" rel="noopener">{html.escape(n)}</a>' for n, u in sources)
+    return (f'<div class="why">' + (f'<h3>{html.escape(title)}</h3><p>{html.escape(text)}</p>' if title else "")
+            + f'<p class="muted dates">{facts}</p><div class="why-foot">'
+            f'<button type="button" class="chip" data-a="{a}" data-b="{b}" data-note="{html.escape(note)}">Show on chart</button>'
+            + (f'<span class="muted">Source: {links}</span>' if links else "") + "</div></div>")
+
+
+def _crash_row(cls: str, cells: list[str], why: str) -> str:
+    spans = "".join(f'<span class="{c}">{v}</span>' for c, v in cells)
+    return f'<details class="crash{cls}"><summary class="crow">{spans}</summary>{why}</details>'
+
+
 def _crash_table(s: dict) -> str:
-    """Every fall of 20% or more, newest first, with the drop under way on top. Rows zoom the chart."""
+    """Every fall of 20% or more, newest first, with the drop under way on top. Each row opens to say why."""
     last = _days_since_epoch(s["last_date"])
     rows = []
     d = s["this_drop"]
     if d:
+        a = _days_since_epoch(d["high_date"])
+        facts = f'From the record on {_day(d["high_date"])}, {_pct(d["low_pct"])} at the lowest so far ({_day(d["low_date"])}).'
         note = f'This drop: {_pct(d["low_pct"])} so far, from the high on {_day(d["high_date"])}'
-        rows.append(f'<tr class="now" data-a="{_days_since_epoch(d["high_date"])}" data-b="{last}" '
-                    f'data-note="{html.escape(note)}" tabindex="0"><td>Now</td>'
-                    f'<td class="num down">{_pct1(d["low_pct"])}</td><td class="num">{_span(d["days_since_high"])}</td>'
-                    f'<td class="num muted">not yet</td></tr>')
+        rows.append(_crash_row(" now", [("", "Now"), ("num down", _pct1(d["low_pct"])), ("num", _span(d["days_since_high"])),
+                                        ("num muted", "not yet")], _why(d["high_date"], facts, a, last, note)))
     for c in reversed(s["crashes"]):
         if c["recovered"] is None:
             continue  # the drop under way, already shown as "Now"
         name = _crash_name(c)
+        start = "the record" if c["from_record"] else "a high"
+        facts = (f'From {start} on {_day(c["peak"])} to the low on {_day(c["trough"])}; back above that high on '
+                 f'{_day(c["recovered"])}.')
+        if not c["from_record"]:
+            facts += " Measured from its own high: the index was still below an older record."
         note = (f'{name}: {_pct(c["pct"])}, from the high on {_day(c["peak"])} to the low on {_day(c["trough"])}, '
                 f'back at the high on {_day(c["recovered"])}')
-        rows.append(f'<tr data-a="{_days_since_epoch(c["peak"])}" data-b="{_days_since_epoch(c["recovered"])}" '
-                    f'data-note="{html.escape(note)}" tabindex="0"><td>{name}</td>'
-                    f'<td class="num down">{_pct1(c["pct"])}</td>'
-                    f'<td class="num">{_span(c["days_down"])}</td><td class="num">{_span(c["days_to_recover"])}</td></tr>')
+        rows.append(_crash_row("", [("", name), ("num down", _pct1(c["pct"])), ("num", _span(c["days_down"])),
+                                    ("num", _span(c["days_to_recover"]))],
+                               _why(c["peak"], facts, _days_since_epoch(c["peak"]), _days_since_epoch(c["recovered"]), note)))
+    head = ('<div class="crow head" aria-hidden="true"><span>Crash</span><span class="num">Drop</span>'
+            '<span class="num">Fell for</span><span class="num">Recovered in</span></div>')
     return (f'<section class="card"><h2>Past crashes</h2>'
             f'<p class="hint muted" style="margin:4px 0 10px">Every fall of {abs(CRASH_PCT):.0f}% or more since '
-            f'{s["history"]["from_year"]}. Tap one to see it on the chart.</p>'
-            f'<table id="crashes"><thead><tr><th>Crash</th><th class="num">Drop</th><th class="num">Fell for</th>'
-            f'<th class="num">Recovered in</th></tr></thead><tbody>{"".join(rows)}</tbody></table></section>')
+            f'{s["history"]["from_year"]}. Tap one to see why it happened.</p>'
+            f'<div class="crashes" id="crashes">{head}{"".join(rows)}</div></section>')
 
 
 ZONE_CLASS = {"At the high": "z-high", "Near the high": "z-near", "Pullback": "z-pull",
@@ -465,13 +613,6 @@ def render_html(s: dict) -> str:
     else:
         price = f'Last close {s["last_close"]:,.2f} <span class="nw">on {_day(s["last_date"])}</span>'
 
-    h = s["history"]
-    share = "under 1" if 0 < h["share_pct"] < 1 else f'{h["share_pct"]:.0f}'
-    if h["at_high"]:
-        context = f'A record close. Since {h["from_year"]}, <b>{share}%</b> of trading days have ended at a record.'
-    else:
-        context = (f'Since {h["from_year"]}, the index has been this far or further below its high on '
-                   f'<b>{share}%</b> of trading days.')
 
     rows = []
     for c in s["changes"]:
@@ -491,7 +632,13 @@ def render_html(s: dict) -> str:
         m = s["day_move"]
         arrow = '<i class="arrow">▼</i> ' if m["pct"] < 0 else '<i class="arrow">▲</i> ' if m["pct"] > 0 else ""
         today = f'<span class="today {_cls(m["pct"])}" data-k="today">{arrow}{abs(m["pct"]):.2f}% {e(m["label"])}</span>'
-    pill = "US market open" if s["market_open"] else "US market closed"
+    ny = ZoneInfo(EXCHANGE_TZ)
+    if s["market_open"]:
+        state = "Market open"
+        when = "closes " + datetime.fromisoformat(s["market_closes_at"].replace("Z", "+00:00")).astimezone(ny).strftime("%H:%M") + " ET"
+    else:
+        state = "Market closed"
+        when = "opens " + datetime.fromisoformat(s["market_opens_at"].replace("Z", "+00:00")).astimezone(ny).strftime("%a %H:%M") + " ET"
     description = (f'{s["index"]} is at an all-time high.' if at_high
                    else f'{s["index"]} is {abs(s["drop_pct"]):.2f}% below its all-time high ({s["zone"].lower()}).')
     data = json.dumps(s, separators=(",", ":")).replace("</", "<\\/")
@@ -517,9 +664,9 @@ def render_html(s: dict) -> str:
 </head>
 <body>
 <main>
-  <header class="top">
-    <div><h1>{e(s["index"])}</h1><div class="kicker">Drop from all-time high</div></div>
-    <span class="pill{' open' if s['market_open'] else ''}" id="mkt">{pill}</span>
+  <header class="card top{' at-high' if at_high else ''}">
+    <div class="id">{LOGO_SVG}<div><h1>{e(s["index"])}</h1><div class="kicker">Drop from all-time high</div></div></div>
+    <div class="status{' open' if s['market_open'] else ''}"><i class="dot"></i><b>{state}</b><span class="sep">·</span><span class="when" id="mkt">{when}</span></div>
   </header>
   <div class="banner" id="offline" hidden>You're offline, so this is the copy from <time data-t="{s["updated_at"]}">{s["updated_at"]}</time>.</div>
   <div class="banner" id="stale" hidden>Couldn't load newer data, so this is the copy from <time data-t="{s["updated_at"]}">{s["updated_at"]}</time>. Still retrying.</div>
@@ -539,7 +686,6 @@ def render_html(s: dict) -> str:
     </div>
     <div class="sub" data-k="vs">{vs_ath}</div>
     <div class="sub" data-k="price">{price}</div>
-    <p class="context" data-k="ctx">{context}</p>
     {_gauge(s)}
   </section>
   {_facts(s)}
@@ -563,10 +709,14 @@ def render_html(s: dict) -> str:
   </section>
   {_crash_table(s)}
   <footer>
-    <div>Updated <time data-t="{s["updated_at"]}">{s["updated_at"]}</time><span id="next"></span></div>
-    <div><button type="button" class="link" id="share">Share</button> · <a href="/data.json">data.json</a> · Source: Yahoo Finance ({e(s["ticker"])})</div>
-    <div>Built by {e(AUTHOR)} · <a href="{e(REPO_URL)}">{e(REPO_URL.removeprefix("https://"))}</a></div>
-    <p class="disclaimer">{e(DISCLAIMER)}</p>
+    <div class="actions">
+      <button type="button" class="btn" id="share">{ICON_SHARE}<span class="lbl">Share</span></button>
+      <a class="btn" href="/data.json">{ICON_DATA}Data</a>
+      <a class="btn" href="{e(REPO_URL)}">{ICON_GITHUB}Source code</a>
+    </div>
+    <p class="muted">Updated <time data-t="{s["updated_at"]}">{s["updated_at"]}</time><span id="next"></span> · Data: Yahoo Finance ({e(s["ticker"])})</p>
+    <p class="by">{LOGO_SVG}<span>{e(TITLE)} · built by <b>{e(AUTHOR)}</b></span></p>
+    <p class="disclaimer"><b>{e(DISCLAIMER.split(". ", 1)[0])}.</b> {e(DISCLAIMER.split(". ", 1)[1])}</p>
   </footer>
   <script type="application/json" id="data">{data}</script>
 </main>
@@ -587,13 +737,22 @@ PAGE_CSS = """
 body { margin:0; background:var(--bg); color:var(--fg); font:16px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; }
 main { max-width:720px; margin:0 auto; padding:20px 16px 40px; }
 a { color:inherit; }
-.top { display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:14px; }
-h1 { font-size:17px; font-weight:650; margin:0; }
-.kicker { color:var(--muted); font-size:13px; }
-.pill { flex:none; padding:3px 10px; border-radius:99px; font-size:12px; font-weight:600; border:1px solid var(--line); color:var(--muted); white-space:nowrap; }
-.pill.open { color:var(--up); border-color:var(--up); }
-.pill.open::before { content:""; display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--up); margin-right:6px; vertical-align:1px; animation:pulse 2s infinite; }
-@keyframes pulse { 50% { opacity:.3; } }
+.card.top { --tint:var(--down); display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:14px 16px;
+  background:linear-gradient(135deg, color-mix(in srgb, var(--tint) 11%, var(--card)), var(--card) 70%); }
+.top.at-high { --tint:var(--up); }
+.logo rect { stroke:var(--line); stroke-width:28; }  /* keeps the black tile visible on a dark card */
+.top .id { display:flex; align-items:center; gap:14px; min-width:0; }
+.logo { display:block; flex:none; width:48px; height:48px; filter:drop-shadow(0 2px 6px rgba(0,0,0,.18)); }
+h1 { font-size:clamp(24px, 6.4vw, 30px); font-weight:750; letter-spacing:-.02em; line-height:1.1; margin:0; }
+.kicker { color:var(--muted); font-size:15px; margin-top:3px; }
+.status { display:inline-flex; align-items:center; gap:7px; padding:7px 14px; border-radius:99px; font-size:14px; white-space:nowrap;
+  background:color-mix(in srgb, var(--card) 70%, transparent); border:1px solid var(--line); box-shadow:0 1px 2px rgba(0,0,0,.05); }
+.status .dot { width:8px; height:8px; border-radius:50%; background:var(--muted); opacity:.7; }
+.status.open .dot { background:var(--up); opacity:1; animation:pulse 2s infinite; }
+.status.open b { color:var(--up); }
+.status b { font-weight:650; }
+.status .sep, .status .when { color:var(--muted); }
+@keyframes pulse { 0%, 100% { box-shadow:0 0 0 0 color-mix(in srgb, var(--up) 55%, transparent); } 70% { box-shadow:0 0 0 7px transparent; } }
 .banner { background:var(--card); border:1px solid var(--down); color:var(--down); border-radius:10px; padding:8px 12px; font-size:14px; margin-bottom:14px; }
 .card { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:20px; margin-bottom:14px; }
 .card.about { padding:0; }
@@ -661,9 +820,18 @@ td:last-child, th:last-child { padding-right:6px; }
 .muted { color:var(--muted); }
 .down { color:var(--down); } .up { color:var(--up); }
 .hint { font-size:13px; margin:12px 0 0; }
-footer { color:var(--muted); font-size:13px; text-align:center; display:grid; gap:4px; }
-.disclaimer { margin:10px auto 0; max-width:520px; font-size:12px; line-height:1.5; }
-button.link { font:inherit; color:inherit; background:none; border:0; padding:0; text-decoration:underline; cursor:pointer; }
+footer { display:flex; flex-direction:column; align-items:center; text-align:center; gap:12px; padding:8px 0 4px; font-size:13px; }
+footer p { margin:0; }
+footer .actions { display:flex; flex-wrap:wrap; justify-content:center; gap:8px; }
+.btn { display:inline-flex; align-items:center; gap:7px; font:inherit; font-size:14px; font-weight:600; color:var(--fg);
+  background:var(--card); border:1px solid var(--line); border-radius:99px; padding:8px 14px; text-decoration:none; cursor:pointer;
+  box-shadow:0 1px 2px rgba(0,0,0,.05); }
+.btn:hover { background:var(--hl); }
+.btn svg { width:16px; height:16px; flex:none; }
+footer .by { display:flex; align-items:center; gap:8px; }
+footer .by .logo { width:22px; height:22px; filter:none; }
+.disclaimer { max-width:460px; color:var(--muted); font-size:12px; line-height:1.5; }
+.disclaimer b { color:var(--fg); }
 .today { font-size:15px; font-weight:650; font-variant-numeric:tabular-nums; white-space:nowrap; }
 .today .arrow { display:inline-block; font-style:normal; font-size:12px; }
 .today.down .arrow { animation:nudge-down .9s ease-in-out 3; }
@@ -671,12 +839,32 @@ button.link { font:inherit; color:inherit; background:none; border:0; padding:0;
 @keyframes nudge-down { 50% { transform:translateY(4px); } }
 @keyframes nudge-up { 50% { transform:translateY(-4px); } }
 .facts { display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:14px 16px; margin:12px 0 0; }
+.facts > div:only-child { grid-column:1 / -1; }
 .facts dt { font-size:13px; color:var(--muted); }
 .facts dd { margin:2px 0 0; font-size:17px; font-weight:600; font-variant-numeric:tabular-nums; }
 .facts dd .muted { font-size:13px; font-weight:400; }
-#crashes td, #crashes th { white-space:nowrap; }
-#crashes td { font-size:15px; }
-@media (max-width:500px) { #crashes td { font-size:14px; } #crashes td.num { padding-left:8px; } }
+.crow { display:grid; grid-template-columns:minmax(0,1.1fr) repeat(3, minmax(0,1fr)) 14px; align-items:center; gap:8px;
+  padding:10px 6px; font-size:15px; font-variant-numeric:tabular-nums; white-space:nowrap; }
+.crow.head { font-size:13px; font-weight:600; color:var(--muted); padding-top:0; }
+.crow.head::after { content:""; }
+.crash { border-top:1px solid var(--line); }
+.crash summary { cursor:pointer; list-style:none; border-radius:8px; }
+.crash summary::-webkit-details-marker { display:none; }
+.crash summary:hover, .crash[open] summary { background:var(--hl); }
+.crash summary::after { content:""; justify-self:end; width:7px; height:7px; border:solid var(--muted); border-width:0 2px 2px 0;
+  transform:rotate(45deg) translateY(-2px); transition:transform .25s; }
+.crash[open] summary::after { transform:rotate(-135deg) translateY(-2px); }
+.crash.now summary { font-weight:600; }
+.why { padding:10px 6px 16px; }
+.why h3 { font-size:15px; margin:0 0 4px; }
+.why p { margin:0 0 8px; font-size:15px; }
+.why .dates { font-size:13px; }
+.why-foot { display:flex; flex-wrap:wrap; align-items:center; gap:8px 14px; font-size:13px; }
+.chip { font:inherit; font-size:13px; font-weight:600; padding:5px 12px; border-radius:99px; border:1px solid var(--line);
+  background:var(--card); color:var(--fg); cursor:pointer; }
+.chip.active { background:var(--fg); color:var(--card); border-color:var(--fg); }
+.crash[open] .why { animation:open .3s ease-out; }
+@media (max-width:500px) { .crow { font-size:14px; gap:6px; padding:10px 2px; } }
 .chart-head h2 { flex:1 0 auto; }
 .chart .high { fill:none; stroke:var(--muted); stroke-width:1.2; stroke-dasharray:4 4; }
 .chart .drawin { stroke-dasharray:1; stroke-dashoffset:1; animation:draw 1.1s ease-out forwards; }
@@ -686,10 +874,10 @@ button.link { font:inherit; color:inherit; background:none; border:0; padding:0;
 .flash { animation:flash 2.4s ease-out; border-radius:6px; }
 @keyframes flash { from { background:var(--flash); } to { background:transparent; } }
 @media (prefers-reduced-motion: reduce) {
-  .flash, .pill.open::before, .today .arrow, .chart .fadein { animation:none !important; }
+  .flash, .status .dot, .today .arrow, .chart .fadein { animation:none !important; }
   .chart .drawin { animation:none; stroke-dashoffset:0; }
   .mark { transition:none; }
-  .about[open] p { animation:none; }
+  .about[open] p, .crash[open] .why { animation:none; }
   .about summary::after { transition:none; }
 }
 """
@@ -827,7 +1015,7 @@ PAGE_JS = r"""
           placed.push(cx);
           var anchor = cx < L + 30 ? "start" : cx > W - 40 ? "end" : "middle";
           marks.push('<text class="crash-label" x="' + cx + '" y="' + Math.min(cy + 16, H - B - 4) + '" text-anchor="' + anchor + '">'
-            + c.trough.slice(0, 4) + " −" + Math.round(-c.pct) + "%</text>");
+            + c.trough.slice(0, 4) + (c.from_record ? " −" + Math.round(-c.pct) + "%" : "") + "</text>");
         }
       });
     }
@@ -869,7 +1057,11 @@ PAGE_JS = r"""
     pressed();
     tween("chart", 600, function (e) { render({ dom: [from[0] + (dom[0] - from[0]) * e, from[1] + (dom[1] - from[1]) * e] }); }, function () { render(); });
   }
-  function clearPick() { all("tr.active").forEach(function (t) { t.classList.remove("active"); }); st.hi = null; st.note = null; st.zoom = false; }
+  function clearPick() {
+    all("#periods tr.active").forEach(function (t) { t.classList.remove("active"); });
+    all("#crashes .chip.active").forEach(function (b) { b.classList.remove("active"); b.textContent = "Show on chart"; });
+    st.hi = null; st.note = null; st.zoom = false;
+  }
   function setRange(r) { clearPick(); st.range = r; save("range", r); go(rangeDom(r)); }
   function setView(v) {
     if (v === st.view) return;
@@ -890,11 +1082,11 @@ PAGE_JS = r"""
     st.note = tr.dataset.label + ": " + tr.dataset.pct + " since " + dstr(from);
     go(rangeDom(st.range)); toChart();
   }
-  function pickCrash(tr) {
-    if (tr.classList.contains("active")) { setRange(st.range); return; }
-    clearPick(); tr.classList.add("active");
-    var a = +tr.dataset.a, b = +tr.dataset.b, pad = Math.max(10, (b - a) * 0.12);
-    st.zoom = true; st.hi = [a, b]; st.note = tr.dataset.note;
+  function pickCrash(btn) {
+    if (btn.classList.contains("active")) { setRange(st.range); return; }
+    clearPick(); btn.classList.add("active"); btn.textContent = "Back to " + st.range;
+    var a = +btn.dataset.a, b = +btn.dataset.b, pad = Math.max(10, (b - a) * 0.12);
+    st.zoom = true; st.hi = [a, b]; st.note = btn.dataset.note;
     go([a - pad, Math.min(lastDay(), b + pad)]); toChart();
   }
   function bindRow(tr, fn) {
@@ -921,8 +1113,8 @@ PAGE_JS = r"""
   function tick() {
     if (!D) return;
     var now = Date.now(), mkt = $("mkt"), next = Date.parse(D.next_update_at), online = navigator.onLine !== false;
-    if (D.market_open) { var c = Date.parse(D.market_closes_at) - now; mkt.textContent = c > 0 ? "Open · closes in " + dur(c) : "Closing…"; }
-    else { var o = Date.parse(D.market_opens_at) - now; mkt.textContent = o > 0 ? "Closed · opens in " + dur(o) : "Opening…"; }
+    if (D.market_open) { var c = Date.parse(D.market_closes_at) - now; mkt.textContent = c > 0 ? "closes in " + dur(c) : "closing…"; }
+    else { var o = Date.parse(D.market_opens_at) - now; mkt.textContent = o > 0 ? "opens in " + dur(o) : "opening…"; }
     var overdue = now > next + 10 * 60e3;
     $("offline").hidden = online;
     $("stale").hidden = !overdue || !online;
@@ -951,7 +1143,7 @@ PAGE_JS = r"""
   function share() {
     var b = $("share"), text = D.drop_pct >= 0 ? D.index + " is at an all-time high." : D.index + " is " + Math.abs(D.drop_pct).toFixed(2) + "% below its all-time high (" + D.zone.toLowerCase() + ").";
     if (navigator.share) { navigator.share({ title: document.title, text: text, url: location.href }).catch(function () {}); return; }
-    if (navigator.clipboard) navigator.clipboard.writeText(text + " " + location.href).then(function () { b.textContent = "Copied"; setTimeout(function () { b.textContent = "Share"; }, 2000); });
+    if (navigator.clipboard) navigator.clipboard.writeText(text + " " + location.href).then(function () { var l = b.querySelector(".lbl") || b; l.textContent = "Copied"; setTimeout(function () { l.textContent = "Share"; }, 2000); });
   }
 
   function init(prev) {
@@ -961,7 +1153,7 @@ PAGE_JS = r"""
     all("#views button").forEach(function (b) { b.addEventListener("click", function () { setView(b.dataset.v); }); });
     var refs = D.changes.filter(function (c) { return c.ref_date; });
     all("#periods tr[data-from]").forEach(function (tr, i) { tr.dataset.label = refs[i].label; tr.dataset.pct = pct(refs[i].pct); bindRow(tr, pickPeriod); });
-    all("#crashes tr[data-a]").forEach(function (tr) { bindRow(tr, pickCrash); });
+    all("#crashes .chip").forEach(function (b) { b.addEventListener("click", function () { pickCrash(b); }); });
     $("share").addEventListener("click", share);
     clearPick();
     st.dom = rangeDom(st.range);
@@ -1005,7 +1197,7 @@ def render_error() -> str:
 <title>{html.escape(TITLE)}</title><link rel="icon" href="{ICON_HREF}">
 <style>{PAGE_CSS}</style></head>
 <body><main>
-  <header class="top"><div><h1>{html.escape(INDEX_NAME)}</h1><div class="kicker">Drop from all-time high</div></div></header>
+  <header class="card top"><div class="id">{LOGO_SVG}<div><h1>{html.escape(INDEX_NAME)}</h1><div class="kicker">Drop from all-time high</div></div></div></header>
   <section class="card"><p style="margin:0">Market data couldn't be loaded right now. This page will try again in a minute.</p></section>
 </main>
 <script>setTimeout(function () {{ location.reload(); }}, 60 * 1000);</script></body></html>

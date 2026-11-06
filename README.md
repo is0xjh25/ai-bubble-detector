@@ -63,8 +63,10 @@ just the drop and the history around it.
 - **A chart you can explore.** Hover or drag for the date, drop and price. Switch between the drop
   and the price (with the all-time high as a dashed line), and between 1M, 3M, 1Y, 5Y and Max; Max
   goes back to 1971 and marks every fall of 20% or more.
-- **Past crashes.** Every fall of 20% or more since 1971: how deep, how long it fell, how long it
-  took to recover. Tap one and the chart glides to it.
+- **Past crashes.** Every fall of 20% or more since 1971, including ones that started below an older
+  record (like 2007–09, which began while the Nasdaq was still under its 2000 peak): how deep, how
+  long it fell, how long it took to recover. Open one to read why it happened, with sources, and
+  send the chart to it.
 - **Change and deepest drop per period.** Tap a row to highlight that period on the chart.
 - **Live.** Market open or closed with countdowns, a fresh copy every hour while the market is open,
   and new numbers swapped in (and briefly highlighted) without reloading the page.

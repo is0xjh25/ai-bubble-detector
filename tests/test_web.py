@@ -31,7 +31,8 @@ class WebPageTest(unittest.TestCase):
             # 149 of 300 days were 25% or more below the high
             self.assertEqual(data["history"]["share_pct"], 49.7)
             self.assertEqual(data["crashes"], [{"peak": "2025-07-30", "trough": "2025-07-31", "pct": -25.0,
-                                                "recovered": None, "days_down": 1, "days_to_recover": None}])
+                                                "recovered": None, "days_down": 1, "days_to_recover": None,
+                                                "from_record": True}])
             self.assertEqual(data["needs_pct"], 33.33)  # 150 -> 200
             self.assertEqual(data["this_drop"]["high_date"], "2025-07-30")
             self.assertIsNone(data["this_drop"]["past"])  # never been this deep before
@@ -63,7 +64,18 @@ class WebPageTest(unittest.TestCase):
         self.assertEqual(s["crashes"][0]["days_to_recover"], 6)  # low Wed 8 -> high Tue 14 Jan
         page = render_html(s)
         self.assertIn("<b>1</b> earlier drops got this deep", page)
-        self.assertIn('class="now"', page)
+        self.assertIn("Since 2025, the index has been this far or further below its high on", page)
+        self.assertIn('class="crash now"', page)
+
+    def test_crash_below_an_older_record(self):
+        # record 100, crash to 20 (-80%), climb to 60, crash to 30 (-50% from 60, like 2007-09), then a new record
+        vals = [100.0, 50.0, 20.0, 40.0, 60.0, 45.0, 30.0, 50.0, 70.0, 90.0, 110.0]
+        idx = pd.bdate_range("2025-01-06", periods=len(vals))
+        crashes = summarise(pd.Series(vals, index=idx))["crashes"]
+        self.assertEqual([(c["pct"], c["from_record"]) for c in crashes], [(-80.0, True), (-50.0, False)])
+        self.assertEqual(crashes[1]["recovered"], "2025-01-16")  # back above 60 at 70 (Thu 16 Jan)
+        page = render_html(summarise(pd.Series(vals, index=idx)))
+        self.assertIn("Measured from its own high", page)
 
     def test_span(self):
         from bubble_detector.web import _span
@@ -121,7 +133,8 @@ class WebPageTest(unittest.TestCase):
         idx = pd.bdate_range("2025-01-01", periods=10)
         page = render_html(summarise(pd.Series(range(1, 11), index=idx, dtype=float)))
         self.assertIn("At the all-time high of 10.00", page)
-        self.assertIn('Built by is0xjh25 · <a href="https://github.com/is0xjh25/bubble-detector">', page)
+        self.assertIn('href="https://github.com/is0xjh25/bubble-detector"', page)
+        self.assertIn("built by <b>is0xjh25</b>", page)
         self.assertIn("Not financial advice.", page)
 
     def test_early_close(self):
