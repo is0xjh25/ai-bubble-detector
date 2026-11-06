@@ -33,7 +33,7 @@ or, on a very bad (good?) day:
 
 Plus a dark-mode HTML report with a chart, a PDF of the same, and a CSV log that grows by one row
 per trading day. On a Mac it can run itself every morning and ping you only when there's something
-to do.
+to do. And there's a [live web page](#the-web-page) for checking the damage from your phone.
 
 ### The report
 
@@ -43,6 +43,49 @@ to do.
 
 Open the sample as a [PDF](docs/sample-report.pdf) or download the self-contained
 [HTML](docs/sample-report.html) (GitHub shows HTML as source; save it and open it in a browser).
+
+### The web page
+
+**[bubble-detector-silk.vercel.app](https://bubble-detector-silk.vercel.app)** answers one question
+at a glance: how far is the Nasdaq below its all-time high, and how bad is that? No buy ladder here,
+just the drop and the history around it.
+
+<p align="center">
+  <a href="https://bubble-detector-silk.vercel.app"><img src="docs/web-page.png" alt="Bubble Detector web page: the Nasdaq 11.90% below its all-time high, labelled Correction, with a gauge against past drops, a one-year chart with range buttons, and a table of changes and deepest drops per period" width="460"></a>
+</p>
+
+- **The drop, with context.** A plain label (Near the high, Pullback, Correction, Bear market), the
+  day's move, how often since 1971 the index has been this far down, and a gauge against every past
+  crash.
+- **This drop.** How long it has lasted, the gain needed to get back to the high, where the index
+  sits against its 200-day average, and how earlier drops that got this deep played out: how long
+  they took to bottom and to recover.
+- **A chart you can explore.** Hover or drag for the date, drop and price. Switch between the drop
+  and the price (with the all-time high as a dashed line), and between 1M, 3M, 1Y, 5Y and Max; Max
+  goes back to 1971 and marks every fall of 20% or more.
+- **Past crashes.** Every fall of 20% or more since 1971: how deep, how long it fell, how long it
+  took to recover. Tap one and the chart glides to it.
+- **Change and deepest drop per period.** Tap a row to highlight that period on the chart.
+- **Live.** Market open or closed with countdowns, a fresh copy every hour while the market is open,
+  and new numbers swapped in (and briefly highlighted) without reloading the page.
+- **Animated, gently.** The headline counts up, the chart draws itself in and morphs between views,
+  the gauge slides into place. All of it switches off if your device asks for reduced motion.
+- **Installs like an app.** "Add to Home Screen" gives it the bubble icon and a full-screen window,
+  and it shows the last copy when you're offline.
+- **Share** button, link previews, and the numbers as JSON at
+  [`/data.json`](https://bubble-detector-silk.vercel.app/data.json), readable from any site.
+
+Preview it locally (writes `site/index.html` and `site/data.json`):
+
+```bash
+python -m bubble_detector.web
+```
+
+**Hosting your own.** Import the repo into [Vercel](https://vercel.com); `vercel.json` already sets
+it up, no settings or keys needed. `api/index.py` builds the page on request and Vercel's cache keeps
+it until the next update (hourly while the market is open, otherwise until the next open, with US
+holidays and half days accounted for). When a copy expires, visitors get the previous one while a
+new one is fetched, so nobody waits on Yahoo.
 
 ---
 
@@ -137,3 +180,5 @@ python -m unittest -v
 
 [MIT](LICENSE). If it helps you buy the bottom, you owe me nothing. If it doesn't, see the
 disclaimer at the top.
+
+Built by [is0xjh25](https://github.com/is0xjh25).

@@ -31,7 +31,12 @@ class WebPageTest(unittest.TestCase):
             # 149 of 300 days were 25% or more below the high
             self.assertEqual(data["history"]["share_pct"], 49.7)
             self.assertEqual(data["crashes"], [{"peak": "2025-07-30", "trough": "2025-07-31", "pct": -25.0,
-                                                "recovered": None}])
+                                                "recovered": None, "days_down": 1, "days_to_recover": None}])
+            self.assertEqual(data["needs_pct"], 33.33)  # 150 -> 200
+            self.assertEqual(data["this_drop"]["high_date"], "2025-07-30")
+            self.assertIsNone(data["this_drop"]["past"])  # never been this deep before
+            self.assertEqual(data["day_move"]["pct"], 0.0)
+            self.assertIn("never been this far below", page)
             by = {c["label"]: c for c in data["changes"]}
             self.assertIsNone(by["1 day"]["deepest_pct"])
             self.assertEqual(by["1 year"]["deepest_pct"], -25.0)
@@ -45,6 +50,48 @@ class WebPageTest(unittest.TestCase):
         self.assertIn("&lt;/script&gt;&lt;b&gt;x", page)
         self.assertIn('<\\/script><b>x', page)  # inside the JSON block
         self.assertIn("series", json.loads(page.split('id="data">')[1].split("</script>")[0]))
+
+    def test_past_drops(self):
+        # 100 -> 80 (-20%) -> back to 100 after 10 days -> 110 record -> 99 now (-10%)
+        vals = [100.0, 90.0, 80.0, 85.0, 90.0, 95.0, 100.0, 105.0, 110.0, 104.0, 99.0]
+        idx = pd.bdate_range("2025-01-06", periods=len(vals))
+        s = summarise(pd.Series(vals, index=idx))
+        past = s["this_drop"]["past"]
+        self.assertEqual(past["count"], 1)
+        self.assertEqual(past["to_low_median_days"], 2)     # Mon 6 -> Wed 8 Jan
+        self.assertEqual(past["recover_median_days"], 7)    # first at -10% Tue 7 -> back at 100 Tue 14 Jan
+        self.assertEqual(s["crashes"][0]["days_to_recover"], 6)  # low Wed 8 -> high Tue 14 Jan
+        page = render_html(s)
+        self.assertIn("<b>1</b> earlier drops got this deep", page)
+        self.assertIn('class="now"', page)
+
+    def test_span(self):
+        from bubble_detector.web import _span
+        self.assertEqual(_span(1), "1 day")
+        self.assertEqual(_span(19), "19 days")
+        self.assertEqual(_span(168), "6 months")
+        self.assertEqual(_span(943), "2.6 years")
+        self.assertEqual(_span(5498), "15 years")
+
+    def test_app_routes(self):
+        import io
+        from api.index import handler
+
+        def get(path):
+            h = handler.__new__(handler)
+            h.path, h.request_version, h.wfile = path, "HTTP/1.1", io.BytesIO()
+            h._headers_buffer = []
+            h.command = "GET"
+            h.requestline = "GET " + path
+            h.client_address = ("127.0.0.1", 0)
+            h.log_request = lambda *a, **k: None
+            h._handle(head=False)
+            return h.wfile.getvalue()
+
+        self.assertIn(b'"display": "standalone"', get("/api/index?format=manifest"))
+        self.assertIn(b"caches.open", get("/api/index?format=sw"))
+        self.assertIn(b"\x89PNG", get("/api/index?format=png&size=192"))
+        self.assertIn(b"404", get("/api/index?format=png&size=99").split(b"\r\n")[0])
 
     def test_zone(self):
         self.assertEqual(zone(0.0), "At the high")
@@ -74,6 +121,8 @@ class WebPageTest(unittest.TestCase):
         idx = pd.bdate_range("2025-01-01", periods=10)
         page = render_html(summarise(pd.Series(range(1, 11), index=idx, dtype=float)))
         self.assertIn("At the all-time high of 10.00", page)
+        self.assertIn('Built by is0xjh25 · <a href="https://github.com/is0xjh25/bubble-detector">', page)
+        self.assertIn("Not financial advice.", page)
 
     def test_early_close(self):
         self.assertTrue(is_early_close(date(2026, 11, 27)))   # day after Thanksgiving

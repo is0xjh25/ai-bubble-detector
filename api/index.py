@@ -1,4 +1,4 @@
-"""Vercel serverless entry point: serves the drop-from-ATH page (/), its data (/data.json) and the icon.
+"""Vercel serverless entry point: the drop-from-ATH page (/), its data (/data.json), icons and the app files.
 
 The response is cached on Vercel's CDN until the next update (hourly while the market is open, otherwise
 until the next open), so Yahoo Finance is queried rarely and every visitor sees the same data. When a
@@ -16,8 +16,8 @@ os.environ.setdefault("XDG_CACHE_HOME", "/tmp")  # yfinance caches here; the res
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from bubble_detector.web import (  # noqa: E402
-    ICON_SVG, WEB_FETCH_RETRIES, WEB_FETCH_TIMEOUT_SECONDS, fetch_closes, next_update, public_json,
-    render_error, render_html, summarise,
+    APP_ICON_SIZES, ICON_SVG, MANIFEST, STATIC_DIR, SW_JS, WEB_FETCH_RETRIES, WEB_FETCH_TIMEOUT_SECONDS,
+    fetch_closes, next_update, public_json, render_error, render_html, summarise,
 )
 
 STALE_SECONDS = 7 * 24 * 3600  # how long the CDN may serve an expired copy while refreshing or when Yahoo fails
@@ -31,9 +31,24 @@ class handler(BaseHTTPRequestHandler):
         self._handle(head=True)
 
     def _handle(self, head):
-        fmt = (parse_qs(urlparse(self.path).query).get("format") or [""])[0]
+        query = parse_qs(urlparse(self.path).query)
+        fmt = (query.get("format") or [""])[0]
+        day = "public, max-age=86400"
         if fmt == "icon":
-            self._send(200, "image/svg+xml", ICON_SVG, "public, max-age=86400", head)
+            self._send(200, "image/svg+xml", ICON_SVG, day, head)
+            return
+        if fmt == "png":
+            size = (query.get("size") or [""])[0]
+            if size.isdigit() and int(size) in APP_ICON_SIZES:
+                self._send(200, "image/png", (STATIC_DIR / f"icon-{size}.png").read_bytes(), day, head)
+            else:
+                self._send(404, "text/plain; charset=utf-8", "not found", day, head)
+            return
+        if fmt == "manifest":
+            self._send(200, "application/manifest+json", MANIFEST, day, head)
+            return
+        if fmt == "sw":  # browsers check for a new version on every visit, so never let it go stale
+            self._send(200, "application/javascript; charset=utf-8", SW_JS, "no-cache", head)
             return
         now = datetime.now(timezone.utc)
         try:
@@ -51,7 +66,7 @@ class handler(BaseHTTPRequestHandler):
             self._send(200, "text/html; charset=utf-8", render_html(s), cache, head)
 
     def _send(self, code, ctype, body, cache, head=False, extra=None):
-        data = body.encode("utf-8")
+        data = body if isinstance(body, bytes) else body.encode("utf-8")
         self.send_response(code)
         self.send_header("Content-Type", ctype)
         self.send_header("Cache-Control", cache)

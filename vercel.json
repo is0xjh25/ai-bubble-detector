@@ -2,11 +2,35 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": null,
   "functions": {
-    "api/index.py": { "maxDuration": 30 }
+    "api/index.py": {
+      "maxDuration": 30,
+      "includeFiles": "bubble_detector/static/**"
+    }
   },
   "rewrites": [
-    { "source": "/", "destination": "/api/index" },
-    { "source": "/data.json", "destination": "/api/index?format=json" },
-    { "source": "/favicon.ico", "destination": "/api/index?format=icon" }
+    {
+      "source": "/",
+      "destination": "/api/index"
+    },
+    {
+      "source": "/data.json",
+      "destination": "/api/index?format=json"
+    },
+    {
+      "source": "/favicon.ico",
+      "destination": "/api/index?format=icon"
+    },
+    {
+      "source": "/manifest.webmanifest",
+      "destination": "/api/index?format=manifest"
+    },
+    {
+      "source": "/sw.js",
+      "destination": "/api/index?format=sw"
+    },
+    {
+      "source": "/icon-:size.png",
+      "destination": "/api/index?format=png&size=:size"
+    }
   ]
 }
