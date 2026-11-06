@@ -68,25 +68,26 @@ def drop_live_bar(closes: pd.Series, tz: str = EXCHANGE_TZ, close_time: str = MA
     return closes
 
 
-def _yf_history(ticker: str, period: str) -> pd.Series:
+def _yf_history(ticker: str, period: str, retries: int = FETCH_RETRIES,
+                timeout: float = FETCH_TIMEOUT_SECONDS) -> pd.Series:
     """Fetch daily closes from yfinance with simple retries. Returns empty Series on failure."""
     import yfinance as yf  # imported lazily so the module is importable without network/yfinance
 
     logging.getLogger("yfinance").setLevel(logging.CRITICAL)  # we report failures ourselves
     last_err: Exception | None = None
-    for attempt in range(1, FETCH_RETRIES + 1):
+    for attempt in range(1, retries + 1):
         try:
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore")  # yfinance emits pandas deprecation noise
                 df = yf.Ticker(ticker).history(period=period, interval="1d", auto_adjust=False,
-                                                 timeout=FETCH_TIMEOUT_SECONDS, raise_errors=True)
+                                                 timeout=timeout, raise_errors=True)
             closes = _normalise_closes(df)
             if not closes.empty:
                 return closes
             last_err = RuntimeError("empty response")
         except Exception as exc:  # network hiccups, rate limits, parsing issues
             last_err = exc
-        if attempt < FETCH_RETRIES:
+        if attempt < retries:
             time.sleep(FETCH_RETRY_DELAY_SECONDS)
     print(f"warning: could not fetch {ticker} ({last_err})", file=sys.stderr)
     return pd.Series(dtype="float64")

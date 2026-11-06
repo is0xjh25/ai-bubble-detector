@@ -1,8 +1,12 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": null,
+  "functions": {
+    "api/index.py": { "maxDuration": 30 }
+  },
   "rewrites": [
     { "source": "/", "destination": "/api/index" },
-    { "source": "/data.json", "destination": "/api/index?format=json" }
+    { "source": "/data.json", "destination": "/api/index?format=json" },
+    { "source": "/favicon.ico", "destination": "/api/index?format=icon" }
   ]
 }

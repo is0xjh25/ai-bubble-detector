@@ -4,9 +4,13 @@ from pathlib import Path
 
 import pandas as pd
 
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 
-from bubble_detector.web import build, market_is_open, next_update
+import json
+
+from bubble_detector.web import (
+    build, is_early_close, market_holidays, market_is_open, next_update, public_json, render_html, summarise, zone,
+)
 
 
 class WebPageTest(unittest.TestCase):
@@ -17,8 +21,45 @@ class WebPageTest(unittest.TestCase):
             s = build(closes, Path(d))
             self.assertEqual(s["ath_close"], 200.0)
             self.assertEqual(s["drop_pct"], -25.0)
-            self.assertIn("−25.00%", (Path(d) / "index.html").read_text())
-            self.assertTrue((Path(d) / "data.json").exists())
+            page = (Path(d) / "index.html").read_text()
+            self.assertIn("−25.00%", page)
+            self.assertIn("50.00 points below the all-time high", page)  # no sign: "below" already says it
+            self.assertNotIn("-50.00 points", page)
+            data = json.loads((Path(d) / "data.json").read_text())
+            self.assertNotIn("series", data)  # chart arrays stay in the page only
+            self.assertEqual(data["zone"], "Bear market")
+            # 149 of 300 days were 25% or more below the high
+            self.assertEqual(data["history"]["share_pct"], 49.7)
+            self.assertEqual(data["crashes"], [{"peak": "2025-07-30", "trough": "2025-07-31", "pct": -25.0,
+                                                "recovered": None}])
+            by = {c["label"]: c for c in data["changes"]}
+            self.assertIsNone(by["1 day"]["deepest_pct"])
+            self.assertEqual(by["1 year"]["deepest_pct"], -25.0)
+
+    def test_page_embeds_data_safely(self):
+        idx = pd.bdate_range("2025-01-01", periods=10)
+        s = summarise(pd.Series(range(1, 11), index=idx, dtype=float))
+        s["index"] = "</script><b>x"
+        page = render_html(s)
+        self.assertNotIn("</script><b>", page)
+        self.assertIn("&lt;/script&gt;&lt;b&gt;x", page)
+        self.assertIn('<\\/script><b>x', page)  # inside the JSON block
+        self.assertIn("series", json.loads(page.split('id="data">')[1].split("</script>")[0]))
+
+    def test_zone(self):
+        self.assertEqual(zone(0.0), "At the high")
+        self.assertEqual(zone(-4.99), "Near the high")
+        self.assertEqual(zone(-5.0), "Pullback")
+        self.assertEqual(zone(-10.0), "Correction")
+        self.assertEqual(zone(-19.99), "Correction")
+        self.assertEqual(zone(-20.0), "Bear market")
+
+    def test_holidays_2026(self):
+        expected = {date(2026, 1, 1), date(2026, 1, 19), date(2026, 2, 16), date(2026, 4, 3), date(2026, 5, 25),
+                    date(2026, 6, 19), date(2026, 7, 3), date(2026, 9, 7), date(2026, 11, 26), date(2026, 12, 25)}
+        self.assertEqual(set(market_holidays(2026)), expected)
+        self.assertNotIn(date(2021, 12, 31), market_holidays(2021))  # Saturday New Year's Day is not made up
+        self.assertIn(date(2027, 12, 24), market_holidays(2027))       # Christmas on Saturday -> Friday off
 
     def test_market_hours(self):
         # 2026-11-05 is a Thursday; New York is UTC-5 in November.
@@ -29,11 +70,31 @@ class WebPageTest(unittest.TestCase):
         self.assertFalse(market_is_open(bar, utc(21, 0)))    # 16:00 NY
         self.assertFalse(market_is_open(pd.Timestamp("2026-11-04"), utc(15, 0)))  # no bar today (holiday)
 
+    def test_at_ath_copy(self):
+        idx = pd.bdate_range("2025-01-01", periods=10)
+        page = render_html(summarise(pd.Series(range(1, 11), index=idx, dtype=float)))
+        self.assertIn("At the all-time high of 10.00", page)
+
+    def test_early_close(self):
+        self.assertTrue(is_early_close(date(2026, 11, 27)))   # day after Thanksgiving
+        self.assertTrue(is_early_close(date(2026, 12, 24)))   # Christmas Eve, Thursday
+        self.assertFalse(is_early_close(date(2026, 11, 26)))  # Thanksgiving itself (full holiday, no bar)
+        self.assertFalse(is_early_close(date(2026, 11, 20)))
+        bar = pd.Timestamp("2026-11-27")
+        self.assertTrue(market_is_open(bar, datetime(2026, 11, 27, 17, 59, tzinfo=timezone.utc)))   # 12:59 NY
+        self.assertFalse(market_is_open(bar, datetime(2026, 11, 27, 18, 0, tzinfo=timezone.utc)))   # 13:00 NY
+
     def test_next_update(self):
-        self.assertEqual(next_update(datetime(2026, 11, 5, 10, 2, tzinfo=timezone.utc)),
-                         datetime(2026, 11, 5, 11, 0, tzinfo=timezone.utc))
-        self.assertEqual(next_update(datetime(2026, 11, 5, 10, 59, tzinfo=timezone.utc)),
-                         datetime(2026, 11, 5, 11, 0, tzinfo=timezone.utc))
+        utc = lambda d, h, m: datetime(2026, 11, d, h, m, tzinfo=timezone.utc)
+        self.assertEqual(next_update(utc(5, 10, 2)), utc(5, 14, 30))   # 05:02 NY -> the 09:30 open
+        self.assertEqual(next_update(utc(5, 15, 2)), utc(5, 16, 0))    # in session -> next hour
+        self.assertEqual(next_update(utc(5, 21, 30)), utc(5, 22, 0))   # 16:30 NY -> one more after the close
+        self.assertEqual(next_update(utc(5, 22, 0)), utc(6, 14, 30))   # 17:00 NY -> Friday's open
+        self.assertEqual(next_update(utc(6, 23, 0)), utc(9, 14, 30))   # Friday evening -> Monday's open
+        self.assertEqual(next_update(utc(27, 18, 30)), utc(27, 19, 0))  # half day: 13:30 NY still updating
+        self.assertEqual(next_update(utc(27, 19, 0)), utc(30, 14, 30))  # 14:00 NY -> Monday's open
+        self.assertEqual(next_update(utc(25, 22, 0)), utc(27, 14, 30))  # skips Thanksgiving (Thu 26th)
+        self.assertFalse(market_is_open(pd.Timestamp("2026-11-26"), utc(26, 15, 0)))  # holiday even with a bar
 
 
 if __name__ == "__main__":
